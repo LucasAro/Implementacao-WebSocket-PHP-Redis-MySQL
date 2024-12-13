@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  php-server:
+    build:
+      context: ./php-server
+    ports:
+      - "8080:80"
+    volumes:
+      - ./php-server:/var/www/html
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+
+  websocket-server:
+    build:
+      context: ./websocket-server
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    networks:
+      - app-network
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: test
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge

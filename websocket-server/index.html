@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>WebSocket Test</title>
+	</head>
+
+	<body>
+		<h1>WebSocket Messages</h1>
+		<ul id="messages"></ul>
+
+		<script>
+			const clientId = prompt( 'Enter your Client ID:' ); // Solicita o ID do cliente
+			const ws = new WebSocket( 'ws://localhost:3000' );
+
+			ws.onopen = () =>
+			{
+				console.log( 'WebSocket connected' );
+				// Envia o ID do cliente ao servidor WebSocket
+				ws.send( JSON.stringify( { type: 'identify', clientId } ) );
+			};
+
+			ws.onmessage = ( event ) =>
+			{
+				const data = JSON.parse( event.data );
+				if ( data.type === 'new_message' )
+				{
+					const li = document.createElement( 'li' );
+					li.textContent = `New message: ${data.data}`;
+					document.getElementById( 'messages' ).appendChild( li );
+				}
+			};
+
+			ws.onerror = ( error ) =>
+			{
+				console.error( 'WebSocket error:', error );
+			};
+
+			ws.onclose = () =>
+			{
+				console.log( 'WebSocket disconnected' );
+			};
+		</script>
+
+	</body>
+
+</html>
