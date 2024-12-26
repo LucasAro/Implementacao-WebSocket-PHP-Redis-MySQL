@@ -8,18 +8,25 @@ if (isset($data['message']) && isset($data['targetId'])) {
     $targetId = $data['targetId'];
 
     try {
-        // Salvar no banco de dados (opcional)
-        $stmt = $pdo->prepare("INSERT INTO messages (message) VALUES (:message)");
+        // Salvar no banco de dados
+        $stmt = $pdo->prepare("INSERT INTO messages (message, target_id) VALUES (:message, :targetId)");
         $stmt->bindParam(':message', $message, PDO::PARAM_STR);
+        $stmt->bindParam(':targetId', $targetId, PDO::PARAM_INT);
         $stmt->execute();
+        error_log("Message saved to database: message=$message, targetId=$targetId");
 
         // Publicar no Redis
         $redis = new Redis();
-        $redis->connect('redis', 6379);
-        $redis->publish('updates', json_encode(['message' => $message, 'targetId' => $targetId]));
+        if (!$redis->connect('redis', 6379)) {
+            throw new Exception('Failed to connect to Redis');
+        }
+        $payload = json_encode(['message' => $message, 'targetId' => (string) $targetId]);
+        $redis->publish('updates', $payload);
+        error_log("Published to Redis: $payload");
 
         echo json_encode(['status' => 'Message sent to Redis']);
     } catch (Exception $e) {
+        error_log("Error: " . $e->getMessage());
         echo json_encode(['error' => 'Failed to process request: ' . $e->getMessage()]);
     }
 } else {

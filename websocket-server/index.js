@@ -19,12 +19,13 @@ redis.subscribe( 'updates', () =>
 
 redis.on( 'message', ( channel, message ) =>
 {
+	console.log( `Received message on channel ${channel}: ${message}` ); // Adicionado para debug
 	if ( channel === 'updates' )
 	{
 		const data = JSON.parse( message );
 
 		// Verifica o ID do cliente e envia apenas para ele
-		const targetId = data.targetId; // ID do cliente alvo
+		const targetId = String( data.targetId ); // Converte para string para garantir a comparação
 		const targetClient = [...clients.entries()].find( ( [ws, id] ) => id === targetId );
 
 		if ( targetClient )
@@ -33,10 +34,18 @@ redis.on( 'message', ( channel, message ) =>
 			if ( ws.readyState === WebSocket.OPEN )
 			{
 				ws.send( JSON.stringify( { type: 'new_message', data: data.message } ) );
+				console.log( `Message sent to client ID ${targetId}: ${data.message}` );
+			} else
+			{
+				console.log( `WebSocket not open for client ID ${targetId}` );
 			}
+		} else
+		{
+			console.log( `No WebSocket found for client ID ${targetId}` );
 		}
 	}
 } );
+
 
 wss.on( 'connection', ( ws ) =>
 {
@@ -48,8 +57,9 @@ wss.on( 'connection', ( ws ) =>
 		const data = JSON.parse( message );
 		if ( data.type === 'identify' )
 		{
-			clients.set( ws, data.clientId ); // Associa o cliente ao seu ID
-			console.log( `Client ID ${data.clientId} associated` );
+			const clientId = String( data.clientId ); // Converte para string
+			clients.set( ws, clientId ); // Associa o cliente ao seu ID
+			console.log( `Client ID ${clientId} associated` );
 		}
 	} );
 
