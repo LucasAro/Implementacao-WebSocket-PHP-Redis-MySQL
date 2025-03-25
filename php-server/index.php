@@ -17,7 +17,7 @@ if (isset($data['message']) && isset($data['targetId'])) {
 
         // Publicar no Redis
         $redis = new Redis();
-        if (!$redis->connect('redis', 6379)) {
+        if (!$redis->connect('redis', 6380)) {
             throw new Exception('Failed to connect to Redis');
         }
         $payload = json_encode(['message' => $message, 'targetId' => (string) $targetId]);

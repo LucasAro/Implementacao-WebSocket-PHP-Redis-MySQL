@@ -31,6 +31,7 @@ cd Implementacao-WebSocket-PHP-Redis-MySQL
 ```
 
 ### 2. Configurar o Ambiente
+
 Certifique-se de ter o Docker e Docker Compose instalados no seu sistema.
 
 ### 3. Estrutura do Projeto
@@ -48,6 +49,7 @@ docker compose up --build
 ```
 
 Este comando iniciará:
+
 - O servidor PHP no Apache (porta 8080).
 - O servidor WebSocket (porta 3000).
 - O Redis.
@@ -58,12 +60,7 @@ Este comando iniciará:
 Acesse o container MySQL e crie a tabela `messages`:
 
 ```sql
-CREATE TABLE messages (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    message TEXT NOT NULL,
-    target_id INT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+CREATE TABLE messages (    id INT AUTO_INCREMENT PRIMARY KEY,    message TEXT NOT NULL,    target_id INT NOT NULL,    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
 ```
 
 ### 6. Testar a API
@@ -86,14 +83,13 @@ Para enviar mensagens para um cliente específico, inclua o `targetId` na requis
 
 ## Comparativo: WebSocket vs Polling
 
-| Característica           | Polling                          | WebSocket                         |
-|--------------------------|----------------------------------|-----------------------------------|
-| Frequência               | Requisições periódicas          | Tempo real                        |
-| Uso de Recursos          | Alto (muitas requisições HTTP) | Baixo (conexão persistente)     |
-| Escalabilidade           | Limitada                        | Alta                              |
-| Experiência do Usuário   | Atraso                          | Instantânea                      |
+| Característica         | Polling                        | WebSocket                   |
+| ---------------------- | ------------------------------ | --------------------------- |
+| Frequência             | Requisições periódicas         | Tempo real                  |
+| Uso de Recursos        | Alto (muitas requisições HTTP) | Baixo (conexão persistente) |
+| Escalabilidade         | Limitada                       | Alta                        |
+| Experiência do Usuário | Atraso                         | Instantânea                 |
 
 ## Considerações Finais
 
 A implementação de WebSocket com Redis proporciona uma solução mais eficiente, escalável e responsiva para aplicações que exigem comunicação em tempo real. Esta POC pode ser expandida para incluir funcionalidades adicionais como autenticação de usuários, grupos de mensagens, e suporte a escala horizontal.
-

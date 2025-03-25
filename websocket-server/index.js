@@ -3,7 +3,7 @@ const WebSocket = require( 'ws' );
 
 const redis = new Redis( {
 	host: 'redis',
-	port: 6379,
+	port: 6380,
 } );
 
 const wss = new WebSocket.Server( { port: 3000 } );
